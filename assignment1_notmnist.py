@@ -93,6 +93,13 @@ image_size = 28  # Pixel width and height.
 pixel_depth = 255.0  # Number of levels per pixel.
 
 ## Exercise 1
+for folder in test_folders:
+	print(folder)
+	image_files = os.listdir(folder)
+	Image(filename=folder + '/' + image_files[0])
+	print(image_files[0])
+
+
 # print(train_folders)
 # filename = 'notMNIST_small/A/SWNlY3ViZS50dGY=.png'
 # f = open(filename).read()
