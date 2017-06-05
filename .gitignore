@@ -5,3 +5,4 @@ notMNIST_small.tar.gz
 notMNIST.pickle
 .ipynb_checkpoints
 .DS_Store
+*.pyc
