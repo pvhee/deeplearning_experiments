@@ -16,3 +16,11 @@ You can later return to it using:
 Then access (on Mac) via
 
 	http://0.0.0.0:8888
+
+## Standalone packages
+
+We've implemented a standalone notMNIST parser for use in e.g. google cloud ML in `trainer`.
+
+To run this, follow [the Google Cloud ML tutorial](https://cloud.google.com/ml-engine/docs/how-tos/getting-started-training-prediction), then test locally  using
+
+	gcloud ml-engine local train --module-name trainer.task --package-path trainer

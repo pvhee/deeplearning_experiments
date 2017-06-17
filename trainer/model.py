@@ -13,11 +13,12 @@ IMAGE_SIZE = 28
 NUM_LABELS = 10
 NUM_CHANNELS = 1 # grayscale
 
-BATCH_SIZE = 32
 PATCH_SIZE = 4
 DEPTH = 24
 NUM_HIDDEN = 256
 NUM_HIDDEN2 = 128
+
+BATCH_SIZE = 32
 
 TRAIN, EVAL, PREDICT = 'TRAIN', 'EVAL', 'PREDICT'
 
@@ -46,17 +47,17 @@ def model_fn(mode):
 
   # Variables.
   layer1_weights = tf.Variable(tf.truncated_normal(
-      [patch_size, patch_size, num_channels, depth], stddev=0.1))
-  layer1_biases = tf.Variable(tf.zeros([depth]))
+      [PATCH_SIZE, PATCH_SIZE, NUM_CHANNELS, DEPTH], stddev=0.1))
+  layer1_biases = tf.Variable(tf.zeros([DEPTH]))
   layer2_weights = tf.Variable(tf.truncated_normal(
-      [patch_size, patch_size, depth, depth], stddev=0.1))
-  layer2_biases = tf.Variable(tf.constant(1.0, shape=[depth]))
+      [PATCH_SIZE, PATCH_SIZE, DEPTH, DEPTH], stddev=0.1))
+  layer2_biases = tf.Variable(tf.constant(1.0, shape=[DEPTH]))
   layer3_weights = tf.Variable(tf.truncated_normal(
-      [image_size // 4 * image_size // 4 * depth, num_hidden], stddev=0.1))
-  layer3_biases = tf.Variable(tf.constant(1.0, shape=[num_hidden]))
+      [IMAGE_SIZE // 4 * IMAGE_SIZE // 4 * DEPTH, NUM_HIDDEN], stddev=0.1))
+  layer3_biases = tf.Variable(tf.constant(1.0, shape=[NUM_HIDDEN]))
   layer4_weights = tf.Variable(tf.truncated_normal(
-      [num_hidden, num_labels], stddev=0.1))
-  layer4_biases = tf.Variable(tf.constant(1.0, shape=[num_labels]))
+      [NUM_HIDDEN, NUM_LABELS], stddev=0.1))
+  layer4_biases = tf.Variable(tf.constant(1.0, shape=[NUM_LABELS]))
 
   # Model.
   def model(data):
@@ -95,7 +96,7 @@ def model_fn(mode):
   test_prediction = tf.nn.softmax(model(tf_test_dataset))
 
   if mode == TRAIN:
-    return train_op, global_step, train_prediction, valid_prediction, test_prediction
+    return tf_train_dataset, tf_train_labels, optimizer, loss, train_prediction, valid_prediction, test_prediction
 
 def accuracy(predictions, labels):
   return (100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1))
@@ -107,23 +108,3 @@ def reformat(dataset, labels):
   labels = (np.arange(NUM_LABELS) == labels[:,None]).astype(np.float32)
   return dataset, labels
 
-def input_fn(pickle_file='notMNIST.pickle'):
-  with open(pickle_file, 'rb') as f:
-    save = pickle.load(f)
-    train_dataset = save['train_dataset']
-    train_labels = save['train_labels']
-    valid_dataset = save['valid_dataset']
-    valid_labels = save['valid_labels']
-    test_dataset = save['test_dataset']
-    test_labels = save['test_labels']
-    del save  # hint to help gc free up memory
-
-    train_dataset, train_labels = reformat(train_dataset, train_labels)
-    valid_dataset, valid_labels = reformat(valid_dataset, valid_labels)
-    test_dataset, test_labels = reformat(test_dataset, test_labels)
-
-    print('Training set', train_dataset.shape, train_labels.shape)
-    print('Validation set', valid_dataset.shape, valid_labels.shape)
-    print('Test set', test_dataset.shape, test_labels.shape)
-
-    return train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels
