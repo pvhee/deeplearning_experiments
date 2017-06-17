@@ -16,7 +16,8 @@ import threading
 
 # import model
 
-NUM_STEPS = 1001
+# NUM_STEPS = 1001
+NUM_STEPS = 9001
 
 IMAGE_SIZE = 28
 NUM_LABELS = 10
