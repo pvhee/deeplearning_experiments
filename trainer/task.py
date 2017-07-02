@@ -16,8 +16,8 @@ import threading
 
 # import model
 
-# NUM_STEPS = 1001
-NUM_STEPS = 9001
+NUM_STEPS = 1001
+# NUM_STEPS = 9001
 
 IMAGE_SIZE = 28
 NUM_LABELS = 10
@@ -144,117 +144,117 @@ def main(_):
       _, l, predictions = session.run([optimizer, loss, train_prediction],
                                       feed_dict=feed_dict)
       if (step % 50 == 0):
-        print('Minibatch loss at step %d: %f' % (step, l))
-        print('Minibatch accuracy: %.1f%%' % accuracy(predictions, batch_labels))
+        print('\tMinibatch loss at step %d: %f' % (step, l))
+        print('\tMinibatch accuracy: %.1f%%' % accuracy(predictions, batch_labels))
         print('Validation accuracy: %.1f%%' % accuracy(valid_prediction.eval(), valid_labels))
         print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
 
+  end_time = time.time()
+  print('Duration: %f seconds', end_time-start_time)
+
+# def run():
+
+#   """Run the training and evaluation graph.
+
+#   Args:
+#     target (string): Tensorflow server target
+#     is_chief (bool): Boolean flag to specify a chief server
+#     train_steps (int): Maximum number of training steps
+#     eval_steps (int): Number of steps to run evaluation for at each checkpoint
+#     job_dir (string): Output dir for checkpoint and summary
+#     train_files (string): List of CSV files to read train data
+#     eval_files (string): List of CSV files to read eval data
+#     train_batch_size (int): Batch size for training
+#     eval_batch_size (int): Batch size for evaluation
+#   """
+
+#   graph = tf.Graph()
+
+#   # Create a new graph and specify that as default
+#   with tf.Graph().as_default():
+#     # Placement of ops on devices using replica device setter
+#     # which automatically places the parameters on the `ps` server
+#     # and the `ops` on the workers
+#     #
+#     # See https://www.tensorflow.org/api_docs/python/tf/train/replica_device_setter
+#     with tf.device(tf.train.replica_device_setter()):
+
+#       # Features and labels
+
+#       # Returns the training graph and global step tensor
+#       tf_train_dataset, tf_train_labels, optimizer, loss, train_prediction, valid_prediction, test_prediction = model.model_fn(
+#           model.TRAIN
+#       )
 
 
+#     # Creates a MonitoredSession for training
+#     # MonitoredSession is a Session-like object that handles
+#     # initialization, recovery and hooks
+#     # https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession
+#     # with tf.train.MonitoredTrainingSession(master=target,
+#     #                                        is_chief=is_chief,
+#     #                                        checkpoint_dir=job_dir,
+#     #                                        hooks=hooks,
+#     #                                        save_checkpoint_secs=20,
+#     #                                        save_summaries_steps=50) as session:
+#     with tf.Session(graph=graph) as session:
 
-def run():
+#       # Tuple of exceptions that should cause a clean stop of the coordinator
+#       # https://www.tensorflow.org/api_guides/python/train#Coordinator_and_QueueRunner
+#       # coord = tf.train.Coordinator(clean_stop_exception_types=(
+#           # tf.errors.CancelledError, tf.errors.OutOfRangeError))
 
-  """Run the training and evaluation graph.
+#       # Important to start all queue runners so that data is available
+#       # for reading
+#       # tf.train.start_queue_runners(coord=coord, sess=session)
 
-  Args:
-    target (string): Tensorflow server target
-    is_chief (bool): Boolean flag to specify a chief server
-    train_steps (int): Maximum number of training steps
-    eval_steps (int): Number of steps to run evaluation for at each checkpoint
-    job_dir (string): Output dir for checkpoint and summary
-    train_files (string): List of CSV files to read train data
-    eval_files (string): List of CSV files to read eval data
-    train_batch_size (int): Batch size for training
-    eval_batch_size (int): Batch size for evaluation
-  """
+#       # Global step to keep track of global number of steps particularly in
+#       # distributed setting
+#       # step = global_step_tensor.eval(session=session)
 
-  graph = tf.Graph()
+#       tf.global_variables_initializer().run()
+#       print('Initialized')
 
-  # Create a new graph and specify that as default
-  with tf.Graph().as_default():
-    # Placement of ops on devices using replica device setter
-    # which automatically places the parameters on the `ps` server
-    # and the `ops` on the workers
-    #
-    # See https://www.tensorflow.org/api_docs/python/tf/train/replica_device_setter
-    with tf.device(tf.train.replica_device_setter()):
+#       for step in range(NUM_STEPS):
+#         offset = (step * BATCH_SIZE) % (train_labels.shape[0] - BATCH_SIZE)
+#         batch_data = train_dataset[offset:(offset + BATCH_SIZE), :, :, :]
+#         batch_labels = train_labels[offset:(offset + BATCH_SIZE), :]
+#         feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels}
+#         _, l, predictions = session.run(
+#           [optimizer, loss, train_prediction], feed_dict=feed_dict)
+#         if (step % 50 == 0):
+#           print('Minibatch loss at step %d: %f' % (step, l))
+#           print('Minibatch accuracy: %.1f%%' % accuracy(predictions, batch_labels))
+#           print('Validation accuracy: %.1f%%' % accuracy(valid_prediction.eval(), valid_labels))
+#           print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
 
-      # Features and labels
+#       # Run the training graph which returns the step number as tracked by
+#       # the global step tensor.
+#       # When train epochs is reached, coord.should_stop() will be true.
+#       # with coord.stop_on_exception():
+#       #   while (train_steps is None or step < train_steps) and not coord.should_stop():
+#       #     step, _ = session.run([global_step_tensor, train_op])
 
-      # Returns the training graph and global step tensor
-      tf_train_dataset, tf_train_labels, optimizer, loss, train_prediction, valid_prediction, test_prediction = model.model_fn(
-          model.TRAIN
-      )
+#     # # Find the filename of the latest saved checkpoint file
+#     # latest_checkpoint = tf.train.latest_checkpoint(job_dir)
 
-
-    # Creates a MonitoredSession for training
-    # MonitoredSession is a Session-like object that handles
-    # initialization, recovery and hooks
-    # https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession
-    # with tf.train.MonitoredTrainingSession(master=target,
-    #                                        is_chief=is_chief,
-    #                                        checkpoint_dir=job_dir,
-    #                                        hooks=hooks,
-    #                                        save_checkpoint_secs=20,
-    #                                        save_summaries_steps=50) as session:
-    with tf.Session(graph=graph) as session:
-
-      # Tuple of exceptions that should cause a clean stop of the coordinator
-      # https://www.tensorflow.org/api_guides/python/train#Coordinator_and_QueueRunner
-      # coord = tf.train.Coordinator(clean_stop_exception_types=(
-          # tf.errors.CancelledError, tf.errors.OutOfRangeError))
-
-      # Important to start all queue runners so that data is available
-      # for reading
-      # tf.train.start_queue_runners(coord=coord, sess=session)
-
-      # Global step to keep track of global number of steps particularly in
-      # distributed setting
-      # step = global_step_tensor.eval(session=session)
-
-      tf.global_variables_initializer().run()
-      print('Initialized')
-
-      for step in range(NUM_STEPS):
-        offset = (step * BATCH_SIZE) % (train_labels.shape[0] - BATCH_SIZE)
-        batch_data = train_dataset[offset:(offset + BATCH_SIZE), :, :, :]
-        batch_labels = train_labels[offset:(offset + BATCH_SIZE), :]
-        feed_dict = {tf_train_dataset : batch_data, tf_train_labels : batch_labels}
-        _, l, predictions = session.run(
-          [optimizer, loss, train_prediction], feed_dict=feed_dict)
-        if (step % 50 == 0):
-          print('Minibatch loss at step %d: %f' % (step, l))
-          print('Minibatch accuracy: %.1f%%' % accuracy(predictions, batch_labels))
-          print('Validation accuracy: %.1f%%' % accuracy(valid_prediction.eval(), valid_labels))
-          print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
-
-      # Run the training graph which returns the step number as tracked by
-      # the global step tensor.
-      # When train epochs is reached, coord.should_stop() will be true.
-      # with coord.stop_on_exception():
-      #   while (train_steps is None or step < train_steps) and not coord.should_stop():
-      #     step, _ = session.run([global_step_tensor, train_op])
-
-    # # Find the filename of the latest saved checkpoint file
-    # latest_checkpoint = tf.train.latest_checkpoint(job_dir)
-
-    # # Only perform this if chief
-    # if is_chief:
-    #   build_and_run_exports(latest_checkpoint,
-    #                         job_dir,
-    #                         'CSV',
-    #                         model.csv_serving_input_fn,
-    #                         hidden_units)
-    #   build_and_run_exports(latest_checkpoint,
-    #                         job_dir,
-    #                         'JSON',
-    #                         model.json_serving_input_fn,
-    #                         hidden_units)
-    #   build_and_run_exports(latest_checkpoint,
-    #                         job_dir,
-    #                         'EXAMPLE',
-    #                         model.example_serving_input_fn,
-    #                         hidden_units)
+#     # # Only perform this if chief
+#     # if is_chief:
+#     #   build_and_run_exports(latest_checkpoint,
+#     #                         job_dir,
+#     #                         'CSV',
+#     #                         model.csv_serving_input_fn,
+#     #                         hidden_units)
+#     #   build_and_run_exports(latest_checkpoint,
+#     #                         job_dir,
+#     #                         'JSON',
+#     #                         model.json_serving_input_fn,
+#     #                         hidden_units)
+#     #   build_and_run_exports(latest_checkpoint,
+#     #                         job_dir,
+#     #                         'EXAMPLE',
+#     #                         model.example_serving_input_fn,
+#     #                         hidden_units)
 
 def dispatch(*args, **kwargs):
   """Parse TF_CONFIG to cluster_spec and call run() method
