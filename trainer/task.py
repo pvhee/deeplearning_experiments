@@ -68,7 +68,7 @@ def accuracy(predictions, labels):
 
 
 def main(train_file,
-         num_steps):
+         num_steps=9000):
     train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = input_fn(train_file)
 
     # Input data.
@@ -216,5 +216,6 @@ if __name__ == "__main__":
 
     args, unknown = parser.parse_known_args()
     arguments = args.__dict__
+
 
     tf.app.run(main=main(**arguments))
