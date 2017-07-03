@@ -18,7 +18,6 @@ from tensorflow.contrib.learn.python.learn.datasets import mnist
 FLAGS = None
 
 IMAGE_SIZE = 28
-NUM_LABELS = 10
 NUM_CHANNELS = 1  # grayscale
 
 def _int64_feature(value):
@@ -71,21 +70,18 @@ def main(unused_argv):
         test_labels = save['test_labels']
         del save  # hint to help gc free up memory
 
+        # print(test_dataset[0])
+        # print(test_labels[0])
+
         # Add the grayscale scannel to the array (just adds in the extra dimension)
         train_dataset = reformat(train_dataset)
         valid_dataset = reformat(valid_dataset)
         test_dataset = reformat(test_dataset)
 
-        # print('Training set', train_dataset.shape, train_labels.shape)
-        # print('Validation set', valid_dataset.shape, valid_labels.shape)
-        # print('Test set', test_dataset.shape, test_labels.shape)
-
-
     # Convert to Examples and write the result to TFRecords.
-    convert_to(train_dataset, train_labels, 'train')
-    convert_to(valid_dataset, valid_labels, 'validation')
+    # convert_to(train_dataset, train_labels, 'train')
+    # convert_to(valid_dataset, valid_labels, 'validation')
     convert_to(test_dataset, test_labels,  'test')
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
