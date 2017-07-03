@@ -3,21 +3,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from six.moves import cPickle as pickle
-from six.moves import range
-
 import numpy as np
 import argparse
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import tensorflow as tf
-
-from tensorflow.contrib.learn.python.learn.datasets import mnist
 
 FLAGS = None
 
 IMAGE_SIZE = 28
+
+def plot(image, i):
+    image_reshaped = np.reshape(image, [IMAGE_SIZE, IMAGE_SIZE])
+    plt.figure(i)
+    plt.imshow(image_reshaped)
 
 def main(unused_argv):
     # returns symbolic label and image
@@ -31,17 +32,15 @@ def main(unused_argv):
     sess.run(init)
     tf.train.start_queue_runners(sess=sess)
 
-    # grab examples back.
-    # first example from file
+    # Let's plot some examples
     label_val_1, image_val_1 = sess.run([label, image])
+    plot(image_val_1, 1)
 
-    print(label_val_1)
-    print(image_val_1)
-    print(image_val_1.shape)
-    # second example from file
     label_val_2, image_val_2 = sess.run([label, image])
-    print(label_val_2)
-    print(image_val_2)
+    plot(image_val_2, 2)
+
+    # Show all figures, each one in a new window
+    plt.show()
 
 def read_from_tfrecord(filename):
     # Let's construct a queue containing a list of filenames.
