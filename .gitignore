@@ -6,3 +6,4 @@ notMNIST.pickle
 .ipynb_checkpoints
 .DS_Store
 *.pyc
+.idea/
