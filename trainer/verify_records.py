@@ -37,6 +37,7 @@ def main(unused_argv):
 
     print(label_val_1)
     print(image_val_1)
+    print(image_val_1.shape)
     # second example from file
     label_val_2, image_val_2 = sess.run([label, image])
     print(label_val_2)
@@ -62,12 +63,8 @@ def read_from_tfrecord(filename):
                                                     'image_raw': tf.FixedLenFeature([], tf.string),
                                                 }, name='features')
 
-    # Decode from a scalar string tensor to a uint8 tensor
-
-    np.fromstring(ts, dtype=int)
-
-    image = tf.decode_raw(features['image_raw'], tf.float64)
-    image.set_shape(IMAGE_SIZE, IMAGE_SIZE)
+    # Decode from a scalar string tensor into a flattened float32 vector
+    image = tf.decode_raw(features['image_raw'], tf.float32)
 
     # OPTIONAL: Could reshape into a 28x28 image and apply distortions
     # here.  Since we are not applying any distortions in this
@@ -75,11 +72,7 @@ def read_from_tfrecord(filename):
     # into a vector, we don't bother.
 
     label = features['label']
-    # image = tfrecord_features['image_raw']
     return label, image
-    # image was saved as uint8, so we have to decode as uint8.
-    # image = tf.decode_raw(tfrecord_features['image'], tf.uint8)
-    # shape = tf.decode_raw(tfrecord_features['shape'], tf.int32)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
