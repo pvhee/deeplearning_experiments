@@ -42,17 +42,12 @@ def main(unused_argv):
     # Show all figures, each one in a new window
     plt.show()
 
-def read_from_tfrecord(filename):
-    # Let's construct a queue containing a list of filenames.
-    # This allows you to break up the the dataset in multiple files to keep size down
-    # Here, though, we only have one file, so let's wrap into a list
-    tfrecord_file_queue = tf.train.string_input_producer([filename], name='queue')
-
+def read_from_tfrecord(filename_queue):
     # Get a reader
     reader = tf.TFRecordReader()
 
     # Read in a single example
-    _, tfrecord_serialized = reader.read(tfrecord_file_queue)
+    _, tfrecord_serialized = reader.read(filename_queue)
 
     # label and image are stored as bytes but could be stored as
     # int64 or float64 values in a serialized tf.Example protobuf.
@@ -70,8 +65,34 @@ def read_from_tfrecord(filename):
     # example, and the next step expects the image to be flattened
     # into a vector, we don't bother.
 
+    # If you wish to apply distortions, have a look at these examples:
+    # https://github.com/tensorflow/models/blob/master/tutorials/image/cifar10/cifar10_input.py
+
     label = features['label']
     return label, image
+
+def inputs(filename, batch_size=10):
+    # Create a queue that produces the filenames to read.
+    # This allows you to break up the the dataset in multiple files to keep size down
+    # Here, though, we only have one file, so let's wrap into a list
+    filename_queue = tf.train.string_input_producer([filename])
+
+    # Read examples from files in the filename queue.
+    label, image = read_from_tfrecord(filename_queue)
+
+    num_preprocess_threads = 16
+    min_queue_examples = 10
+
+    # Generate a batch of images and labels by building up a random queue
+    images, label_batch = tf.train.shuffle_batch(
+        [image, label],
+        batch_size=batch_size,
+        num_threads=num_preprocess_threads,
+        capacity=min_queue_examples + 3 * batch_size,
+        min_after_dequeue=min_queue_examples)
+
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
