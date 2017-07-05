@@ -34,7 +34,7 @@ def plot(images, labels):
     plt.show()
 
 def main(unused_argv):
-    batch_size = 64
+    batch_size = FLAGS.number
     images, labels = inputs(FLAGS.read_file, batch_size)
 
     # We need to start a session, to see something!
@@ -84,7 +84,7 @@ def read_from_tfrecord(filename_queue):
     label = features['label']
     return label, image
 
-def inputs(filename, batch_size=10):
+def inputs(filename, batch_size):
     # Create a queue that produces the filenames to read.
     # This allows you to break up the the dataset in multiple files to keep size down
     # Here, though, we only have one file, so let's wrap into a list
@@ -115,5 +115,12 @@ if __name__ == '__main__':
         required=True,
         help='Verify a given tfrecords file'
     )
+    parser.add_argument(
+        '--number',
+        type=int,
+        default=64,
+        help="Number of (random)examples to print out"
+    )
+
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

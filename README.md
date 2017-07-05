@@ -24,3 +24,12 @@ We've implemented a standalone notMNIST parser for use in e.g. google cloud ML i
 To run this, follow [the Google Cloud ML tutorial](https://cloud.google.com/ml-engine/docs/how-tos/getting-started-training-prediction), then test locally  using
 
 	gcloud ml-engine local train --module-name trainer.task --package-path trainer -- --train-file notMNIST.pickle
+
+Copy over files to your bucket
+
+    BUCKET_NAME='notmnist'
+    gsutil cp -r /tmp/data/test.tfrecords gs://$BUCKET_NAME/
+
+Verify records in your bucket (this prints a number of them)
+
+    python verify_records.py --read-file gs://notmnist/test.tfrecords --number 16
