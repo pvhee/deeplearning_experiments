@@ -7,6 +7,7 @@ import numpy as np
 import argparse
 import os
 import sys
+import math
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -15,31 +16,40 @@ FLAGS = None
 
 IMAGE_SIZE = 28
 
-def plot(image, i):
-    image_reshaped = np.reshape(image, [IMAGE_SIZE, IMAGE_SIZE])
-    plt.figure(i)
-    plt.imshow(image_reshaped)
+PRETTY_LABELS = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J'}
+
+# Set warning level lower
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+
+def plot(images, labels):
+    plt.figure()
+    n = math.sqrt(images.shape[0])
+    for i, image in enumerate(images):
+        image_reshaped = np.reshape(image, [IMAGE_SIZE, IMAGE_SIZE])
+        plt.subplot(n, n, i+1)
+        plt.axis('off')
+        plt.title(PRETTY_LABELS[labels[i]])
+        plt.imshow(image_reshaped)
+    plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.8, wspace=0.2)
+    plt.show()
 
 def main(unused_argv):
-    batch_size = 2
+    batch_size = 64
     images, labels = inputs(FLAGS.read_file, batch_size)
 
     # We need to start a session, to see something!
     sess = tf.Session()
 
     # Required. See below for explanation
-    init = tf.initialize_all_variables()
+    init = tf.global_variables_initializer()
     sess.run(init)
     tf.train.start_queue_runners(sess=sess)
 
     # Let's plot some examples
     label_val, image_val = sess.run([labels, images])
 
-    plot(image_val[0], 1)
-    plot(image_val[1], 2)
-
-    # Show all figures, each one in a new window
-    plt.show()
+    # Show all figures in a grid
+    plot(image_val, label_val)
 
 def read_from_tfrecord(filename_queue):
     # Get a reader
