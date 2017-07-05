@@ -6,22 +6,38 @@ import sys
 import tensorflow as tf
 import numpy as np
 
-SEQUENCE_LENGTH = 2
+SEQUENCE_LENGTH = 5
 
 def create_sequence(data, labels):
     i = 0
-    for j in range(SEQUENCE_LENGTH):
-        data[i]
-        i += 1
-        print(data[i].shape)
+    # for j in range(SEQUENCE_LENGTH):
+    #     data[i]
+    #     i += 1
+    #     # print(data[i].shape)
 
-    combi = np.concatenate([data[0], np.full([28,28,1], -0.5), data[1]], axis=1)
-    print(combi.shape)
+    slice1 = data[i:i+SEQUENCE_LENGTH,]
+    combi1 = np.concatenate(slice1, axis=1)
 
-    combi_reshaped = np.reshape(combi, [1, 28, 28*3, 1])
-    print(combi_reshaped.shape)
+    i += 5
+    slice2 = data[i:i+SEQUENCE_LENGTH,]
+    combi2 = np.concatenate(slice2, axis=1)
 
-    verify_records.plot(combi_reshaped, labels)
+    print([combi1,combi2].shape)
+
+    # combi_reshaped = np.reshape(combi, [2, 28, 28 * SEQUENCE_LENGTH, 1])
+
+
+    # print(labels[i:i+SEQUENCE_LENGTH,])
+    # print(combi.shape)
+
+    # combi_reshaped = np.reshape([combi1,combi2], [1, 28, 28*SEQUENCE_LENGTH, 1])
+    # print(combi_reshaped.shape)
+
+    # verify_records.plot(combi_reshaped, labels)
+
+
+    # verify_records.plot(combi_reshaped, labels)
+
 
 def main(unused_argv):
     train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = convert_to_records.read_pickle(FLAGS.input_file)
