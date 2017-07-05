@@ -23,7 +23,6 @@ NUM_CHANNELS = 1  # grayscale
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
-
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
@@ -54,13 +53,15 @@ def reformat(dataset):
     return dataset
 
 def main(unused_argv):
-    # # Get the data. -- this has to be rewritten to fetch this elsewhere
-    # data_sets = mnist.read_data_sets(FLAGS.directory,
-    #                                  dtype=tf.uint8,
-    #                                  reshape=False,
-    #                                  validation_size=FLAGS.validation_size)
+    train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = read_pickle(FLAGS.input_file)
 
-    with open(FLAGS.input_file, 'rb') as f:
+    # Convert to Examples and write the result to TFRecords.
+    convert_to(train_dataset, train_labels, 'train')
+    convert_to(valid_dataset, valid_labels, 'validation')
+    convert_to(test_dataset, test_labels,  'test')
+
+def read_pickle(filename):
+    with open(filename, 'rb') as f:
         save = pickle.load(f)
         train_dataset = save['train_dataset']
         train_labels = save['train_labels']
@@ -70,18 +71,11 @@ def main(unused_argv):
         test_labels = save['test_labels']
         del save  # hint to help gc free up memory
 
-        # print(test_dataset[0])
-        # print(test_labels[0])
-
-        # Add the grayscale scannel to the array (just adds in the extra dimension)
         train_dataset = reformat(train_dataset)
         valid_dataset = reformat(valid_dataset)
         test_dataset = reformat(test_dataset)
+    return train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels
 
-    # Convert to Examples and write the result to TFRecords.
-    # convert_to(train_dataset, train_labels, 'train')
-    # convert_to(valid_dataset, valid_labels, 'validation')
-    convert_to(test_dataset, test_labels,  'test')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -94,7 +88,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--directory',
         type=str,
-        default='/tmp/data',
+        default='/tmp/data/',
         help='Directory to write the converted result'
     )
     # parser.add_argument(

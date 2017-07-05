@@ -24,8 +24,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 def plot(images, labels):
     plt.figure()
     n = math.sqrt(images.shape[0])
+    width = images.shape[1]
+    height = images.shape[2]
     for i, image in enumerate(images):
-        image_reshaped = np.reshape(image, [IMAGE_SIZE, IMAGE_SIZE])
+        image_reshaped = np.reshape(image, [width, height])
         plt.subplot(n, n, i+1)
         plt.axis('off')
         plt.title(PRETTY_LABELS[labels[i]])
