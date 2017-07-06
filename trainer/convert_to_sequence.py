@@ -6,44 +6,58 @@ import sys
 import tensorflow as tf
 import numpy as np
 
+from sklearn.utils import shuffle
+
 SEQUENCE_LENGTH = 5
 
-def create_sequence(data, labels):
+def create_sequence(data, labels, limit=0):
     i = 0
-    # for j in range(SEQUENCE_LENGTH):
-    #     data[i]
-    #     i += 1
-    #     # print(data[i].shape)
+    j = 0
 
-    slice1 = data[i:i+SEQUENCE_LENGTH,]
-    combi1 = np.concatenate(slice1, axis=1)
+    data, labels = shuffle(data, labels)
 
-    i += 5
-    slice2 = data[i:i+SEQUENCE_LENGTH,]
-    combi2 = np.concatenate(slice2, axis=1)
+    # If no limit is given, then give back a data set equal in size as the given data set
+    if limit == 0:
+        limit = len(data)
 
-    print([combi1,combi2].shape)
+    sequence = []
+    sequence_labels = []
 
-    # combi_reshaped = np.reshape(combi, [2, 28, 28 * SEQUENCE_LENGTH, 1])
+    while i<limit:
+        # check whether we need to restart our loop on a reshuffled data object
+        if j + SEQUENCE_LENGTH >= len(data):
+            np.random.shuffle(data)
+            j=0
 
+        # Get a slice into data capturing SEQUENCE_LENGTH images, then concatenate them horizontally
+        # Todo: should we add in a separator?
+        # Todo we need to add in empty characters too!
+        data_slice = data[j:j+SEQUENCE_LENGTH,]
+        labels_slice = labels[j:j+SEQUENCE_LENGTH,]
+        img = np.concatenate(data_slice, axis=1)
 
-    # print(labels[i:i+SEQUENCE_LENGTH,])
-    # print(combi.shape)
+        sequence.append(img)
+        sequence_labels.append(labels_slice)
 
-    # combi_reshaped = np.reshape([combi1,combi2], [1, 28, 28*SEQUENCE_LENGTH, 1])
-    # print(combi_reshaped.shape)
+        # Increase our both counters
+        i += 1
+        j += SEQUENCE_LENGTH
 
-    # verify_records.plot(combi_reshaped, labels)
+    # Convert back to nparrays, which are easier to manage
+    sequence = np.asarray(sequence)
+    sequence_labels = np.asarray(sequence_labels)
 
+    # verify_records.plotSequence(sequence, sequence_labels)
 
-    # verify_records.plot(combi_reshaped, labels)
+    return sequence, sequence_labels
 
 
 def main(unused_argv):
     train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = convert_to_records.read_pickle(FLAGS.input_file)
 
     # print(train_dataset.shape)
-    create_sequence(test_dataset, test_labels)
+    _test_dataset, _test_labels = create_sequence(test_dataset, test_labels, 16)
+    convert_to_records.convert_to(_test_dataset, _test_labels, FLAGS.directory, 'test.sequence')
 
 
 if __name__ == '__main__':
@@ -55,11 +69,18 @@ if __name__ == '__main__':
         help='Pickle file with not MNIST data'
     )
     # parser.add_argument(
-    #     '--directory',
-    #     type=str,
-    #     default='/tmp/data/',
-    #     help='Directory to write the converted result'
+    #     '--limit',
+    #     type=int,
+    #     default=16,
+    #     help="Number of (random)examples to print out"
     # )
+
+    parser.add_argument(
+        '--directory',
+        type=str,
+        default='/tmp/data/',
+        help='Directory to write the converted result'
+    )
 
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
