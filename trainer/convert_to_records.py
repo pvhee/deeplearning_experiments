@@ -13,8 +13,6 @@ import sys
 
 import tensorflow as tf
 
-from tensorflow.contrib.learn.python.learn.datasets import mnist
-
 FLAGS = None
 
 IMAGE_SIZE = 28
@@ -26,14 +24,14 @@ def _int64_feature(value):
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
-def convert_to(images, labels, name):
+def convert_to(images, labels, directory, name):
     """Converts a dataset to tfrecords."""
     num_examples = images.shape[0]
     rows = images.shape[1]
     cols = images.shape[2]
     depth = images.shape[3]
 
-    filename = os.path.join(FLAGS.directory, name + '.tfrecords')
+    filename = os.path.join(directory, name + '.tfrecords')
     print('Writing', filename)
     writer = tf.python_io.TFRecordWriter(filename)
     for index in range(num_examples):
@@ -52,14 +50,6 @@ def reformat(dataset):
         (-1, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS)).astype(np.float32)
     return dataset
 
-def main(unused_argv):
-    train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = read_pickle(FLAGS.input_file)
-
-    # Convert to Examples and write the result to TFRecords.
-    convert_to(train_dataset, train_labels, 'train')
-    convert_to(valid_dataset, valid_labels, 'validation')
-    convert_to(test_dataset, test_labels,  'test')
-
 def read_pickle(filename):
     with open(filename, 'rb') as f:
         save = pickle.load(f)
@@ -76,6 +66,13 @@ def read_pickle(filename):
         test_dataset = reformat(test_dataset)
     return train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels
 
+def main(unused_argv):
+    train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = read_pickle(FLAGS.input_file)
+
+    # Convert to Examples and write the result to TFRecords.
+    convert_to(train_dataset, train_labels, FLAGS.directory, 'train')
+    convert_to(valid_dataset, valid_labels, FLAGS.directory, 'validation')
+    convert_to(test_dataset, test_labels, FLAGS.directory, 'test')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
