@@ -1,4 +1,4 @@
-"""Converts notMNIST data into sequences of up to 5 numbers, saved as TFRecords"""
+"""Converts notMNIST data into sequences of letters, saved as TFRecords"""
 import convert_to_records
 import verify_records
 import argparse

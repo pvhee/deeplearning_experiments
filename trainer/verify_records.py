@@ -140,7 +140,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--number',
         type=int,
-        default=64,
+        default=4,
         help="Number of (random)examples to print out"
     )
 
