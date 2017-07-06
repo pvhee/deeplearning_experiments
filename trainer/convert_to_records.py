@@ -13,10 +13,9 @@ import sys
 
 import tensorflow as tf
 
-FLAGS = None
+import notMNIST
 
-IMAGE_SIZE = 28
-NUM_CHANNELS = 1  # grayscale
+FLAGS = None
 
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
@@ -36,18 +35,20 @@ def convert_to(images, labels, directory, name):
     writer = tf.python_io.TFRecordWriter(filename)
     for index in range(num_examples):
         image_raw = images[index].tostring()
+        label_raw = labels[index].tostring()
         example = tf.train.Example(features=tf.train.Features(feature={
             'height': _int64_feature(rows),
             'width': _int64_feature(cols),
             'depth': _int64_feature(depth),
-            'label': _int64_feature(int(labels[index])),
+            # 'label': _int64_feature(int(labels[index])),
+            'label': _bytes_feature(label_raw),
             'image_raw': _bytes_feature(image_raw)}))
         writer.write(example.SerializeToString())
     writer.close()
 
 def reformat(dataset):
     dataset = dataset.reshape(
-        (-1, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS)).astype(np.float32)
+        (-1, notMNIST.IMAGE_SIZE, notMNIST.IMAGE_SIZE, notMNIST.IMAGE_DEPTH)).astype(np.float32)
     return dataset
 
 def read_pickle(filename):
@@ -88,15 +89,6 @@ if __name__ == '__main__':
         default='/tmp/data/',
         help='Directory to write the converted result'
     )
-    # parser.add_argument(
-    #     '--validation_size',
-    #     type=int,
-    #     default=5000,
-    #     help="""\
-    #     Number of examples to separate from the training data for the validation
-    #     set.\
-    #     """
-    # )
 
     FLAGS, unparsed = parser.parse_known_args()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

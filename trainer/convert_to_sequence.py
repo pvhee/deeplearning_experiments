@@ -8,7 +8,7 @@ import numpy as np
 
 from sklearn.utils import shuffle
 
-SEQUENCE_LENGTH = 5
+import notMNIST
 
 def create_sequence(data, labels, limit=0):
     i = 0
@@ -25,15 +25,15 @@ def create_sequence(data, labels, limit=0):
 
     while i<limit:
         # check whether we need to restart our loop on a reshuffled data object
-        if j + SEQUENCE_LENGTH >= len(data):
+        if j + notMNIST.SEQUENCE_LENGTH >= len(data):
             np.random.shuffle(data)
             j=0
 
         # Get a slice into data capturing SEQUENCE_LENGTH images, then concatenate them horizontally
         # Todo: should we add in a separator?
         # Todo we need to add in empty characters too!
-        data_slice = data[j:j+SEQUENCE_LENGTH,]
-        labels_slice = labels[j:j+SEQUENCE_LENGTH,]
+        data_slice = data[j:j+notMNIST.SEQUENCE_LENGTH,]
+        labels_slice = labels[j:j+notMNIST.SEQUENCE_LENGTH,]
         img = np.concatenate(data_slice, axis=1)
 
         sequence.append(img)
@@ -41,13 +41,11 @@ def create_sequence(data, labels, limit=0):
 
         # Increase our both counters
         i += 1
-        j += SEQUENCE_LENGTH
+        j += notMNIST.SEQUENCE_LENGTH
 
     # Convert back to nparrays, which are easier to manage
     sequence = np.asarray(sequence)
     sequence_labels = np.asarray(sequence_labels)
-
-    # verify_records.plotSequence(sequence, sequence_labels)
 
     return sequence, sequence_labels
 
@@ -55,7 +53,6 @@ def create_sequence(data, labels, limit=0):
 def main(unused_argv):
     train_dataset, train_labels, valid_dataset, valid_labels, test_dataset, test_labels = convert_to_records.read_pickle(FLAGS.input_file)
 
-    # print(train_dataset.shape)
     _test_dataset, _test_labels = create_sequence(test_dataset, test_labels, 16)
     convert_to_records.convert_to(_test_dataset, _test_labels, FLAGS.directory, 'test.sequence')
 
@@ -68,13 +65,6 @@ if __name__ == '__main__':
         default='notMNIST.pickle',
         help='Pickle file with not MNIST data'
     )
-    # parser.add_argument(
-    #     '--limit',
-    #     type=int,
-    #     default=16,
-    #     help="Number of (random)examples to print out"
-    # )
-
     parser.add_argument(
         '--directory',
         type=str,
