@@ -33,3 +33,11 @@ Copy over files to your bucket
 Verify records in your bucket (this prints a number of them)
 
     python verify_records.py --read-file gs://notmnist/test.tfrecords --number 16
+    
+To run the Keras Covnet for notMNIST classification, run
+
+    python trainer/model_keras.py
+    
+or run the exact same model but implemented using Keras' more reusable functional API
+
+    python trainer/model_keras_functional.py
