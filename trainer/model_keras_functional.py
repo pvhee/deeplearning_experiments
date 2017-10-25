@@ -8,7 +8,7 @@ from notMNIST import load_data, IMAGE_ROWS, IMAGE_COLS, NUM_LABELS, NUM_CHANNELS
 
 # Training settings
 BATCH_SIZE = 128
-EPOCHS = 1
+EPOCHS = 10
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data(verbose=1)
@@ -16,11 +16,15 @@ input_shape = (IMAGE_ROWS, IMAGE_COLS, NUM_CHANNELS)
 
 
 def create_network(img_input):
-    x = Conv2D(16, kernel_size=(3,3), strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
+    x = Conv2D(64, kernel_size=(3,3), strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
+    x = MaxPooling2D(pool_size=(2,2))(x)
+    x = Conv2D(21, kernel_size=(3,3), strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
     x = MaxPooling2D(pool_size=(2,2))(x)
     x = Dropout(0.25)(x)
     x = Flatten()(x)
-    x = Dense(128, activation='relu')(x)
+    x = Dense(512, activation='relu')(x)
+    x = Dropout(0.25)(x)
+    x = Dense(256, activation='relu')(x)
     x = Dropout(0.5)(x)
     return Dense(NUM_LABELS, activation='softmax')(x)
 
