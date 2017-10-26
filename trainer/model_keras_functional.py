@@ -26,7 +26,7 @@ def visualize(x):
     plt.show()
 
 def visualize_number(model, number):
-    '''Visualise a number after passing through our model. This gives a visual into the architecture of our network '''
+    '''Visualize a number after passing through our model. This gives a visual into the architecture of our network '''
     # Keras expects batches of images, so we have to add a dimension to trick it into being nice
     number_batch = np.expand_dims(number,axis=0)
     conv_letter = model.predict(number_batch)
@@ -36,18 +36,12 @@ def visualize_number(model, number):
 
 def create_network(img_input):
     x = Conv2D(64, kernel_size=3, strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
-    # x = Conv2D(1, kernel_size=3, strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
     x = MaxPooling2D(pool_size=2)(x)
-    x = Conv2D(32, kernel_size=(3,3), strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
-    # x = Conv2D(1, kernel_size=(3,3), strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
+    x = Conv2D(32, kernel_size=3, strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
     x = MaxPooling2D(pool_size=2)(x)
-    # return x
-    x = Dropout(0.25)(x)
     x = Flatten()(x)
-    x = Dense(512, activation='relu')(x)
-    x = Dropout(0.25)(x)
-    x = Dense(256, activation='relu')(x)
-    x = Dropout(0.5)(x)
+    x = Dense(1024, activation='relu')(x)
+    x = Dropout(0.8)(x)
     return Dense(NUM_LABELS, activation='softmax')(x)
 
 img_input = Input(shape=input_shape)
