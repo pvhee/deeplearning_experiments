@@ -6,15 +6,10 @@ import numpy as np
 import tensorflow as tf
 from six.moves import cPickle as pickle
 from six.moves import range
+from tensorflow.python.saved_model import builder as saved_model_builder
 
 import argparse
-import json
-import os
 import time
-import threading
-
-# import model
-
 
 IMAGE_SIZE = 28
 NUM_LABELS = 10
@@ -65,6 +60,12 @@ def reformat(dataset, labels):
 def accuracy(predictions, labels):
     return (100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1))
             / predictions.shape[0])
+
+def export(export_dir, sess):
+    builder = saved_model_builder.SavedModelBuilder(export_dir)
+    builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.SERVING],
+                                         signature_def_map=)
+
 
 
 def main(train_file,
@@ -134,6 +135,9 @@ def main(train_file,
 
     with tf.Session() as session:
 
+        # Create a saver so we can save the results of our network
+        # saver = tf.train.Saver();
+
         tf.global_variables_initializer().run()
         print('Initialized')
 
@@ -150,6 +154,9 @@ def main(train_file,
                 print('\tMinibatch accuracy: %.1f%%' % accuracy(predictions, batch_labels))
                 print('Validation accuracy: %.1f%%' % accuracy(valid_prediction.eval(), valid_labels))
                 print('Test accuracy: %.1f%%' % accuracy(test_prediction.eval(), test_labels))
+
+        # This is the end, let's save our network for reuse later
+        # saver.save(session, 'model')
 
     end_time = time.time()
     print('Duration: %f seconds', end_time - start_time)
