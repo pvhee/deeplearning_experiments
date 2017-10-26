@@ -41,12 +41,14 @@ def create_network(img_input):
     x = MaxPooling2D(pool_size=2)(x)
     x = Flatten()(x)
     x = Dense(1024, activation='relu')(x)
-    x = Dropout(0.8)(x)
+    x = Dropout(0.5)(x)
     return Dense(NUM_LABELS, activation='softmax')(x)
 
 img_input = Input(shape=input_shape)
 network = create_network(img_input)
 model = Model(img_input, network)
+
+model.summary()
 
 ## Try visualising network parts
 ## Note: also uncomment the parts in create_network and return early (i.e. before we flatten)
