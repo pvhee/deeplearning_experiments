@@ -4,13 +4,18 @@
 import keras
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten
 from keras.models import Model
+from keras.models import load_model
 from notMNIST import load_data, IMAGE_ROWS, IMAGE_COLS, NUM_LABELS, NUM_CHANNELS
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Training settings
 BATCH_SIZE = 128
-EPOCHS = 10
+EPOCHS = 1
+
+# Saved model, turn the flag on or off to do evaluating or training
+MODEL_FILE = 'notmnist_model.h5'
+LOAD_MODEL_FLAG = 1
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data(verbose=1)
@@ -44,12 +49,6 @@ def create_network(img_input):
     x = Dropout(0.5)(x)
     return Dense(NUM_LABELS, activation='softmax')(x)
 
-img_input = Input(shape=input_shape)
-network = create_network(img_input)
-model = Model(img_input, network)
-
-model.summary()
-
 ## Try visualising network parts
 ## Note: also uncomment the parts in create_network and return early (i.e. before we flatten)
 
@@ -58,18 +57,26 @@ model.summary()
 # visualize_number(model, example)
 # exit(1)
 
+if(LOAD_MODEL_FLAG):
+    model = load_model(MODEL_FILE)
+else:
+    img_input = Input(shape=input_shape)
+    network = create_network(img_input)
+    model = Model(img_input, network)
 
-## Train the network
+    ## Train the network
+    model.compile(loss=keras.losses.categorical_crossentropy,
+                  optimizer=keras.optimizers.Adadelta(),
+                  metrics=['accuracy'])
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adadelta(),
-              metrics=['accuracy'])
+    model.fit(x_train, y_train,
+              batch_size=BATCH_SIZE,
+              epochs=EPOCHS,
+              verbose=1,
+              validation_data=(x_valid, y_valid))
 
-model.fit(x_train, y_train,
-          batch_size=BATCH_SIZE,
-          epochs=EPOCHS,
-          verbose=1,
-          validation_data=(x_valid, y_valid))
+    model.save(MODEL_FILE)
+
 score = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
