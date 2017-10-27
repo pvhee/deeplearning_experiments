@@ -5,9 +5,14 @@ import keras
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten
 from keras.models import Model
 from keras.models import load_model
-from notMNIST import load_data, IMAGE_ROWS, IMAGE_COLS, NUM_LABELS, NUM_CHANNELS
+from notMNIST import load_data, IMAGE_ROWS, IMAGE_COLS, NUM_LABELS, NUM_CHANNELS, pretty_labeler
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import random
+
+# Suppress TF warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
 BATCH_SIZE = 128
@@ -28,6 +33,17 @@ def visualize(x):
     plt.figure()
     plt.axis('off')
     plt.imshow(x, interpolation='none', cmap='gray')
+    plt.show()
+
+def visualize_batch(x_batch, y_batch):
+    '''Visualize a batch of images'''
+    plt.figure()
+    plt.suptitle(np.array_str(pretty_labeler(y_batch)))
+    for i, x in enumerate(x_batch):
+        x = np.squeeze(x, axis=2)
+        plt.subplot(2, 4, i+1)
+        plt.axis('off')
+        plt.imshow(x)
     plt.show()
 
 def visualize_number(model, number):
@@ -59,6 +75,13 @@ def create_network(img_input):
 
 if(LOAD_MODEL_FLAG):
     model = load_model(MODEL_FILE)
+    examples = x_test
+    num_examples = 8
+    random_batch = examples[np.random.choice(examples.shape[0], size=num_examples, replace=False), :]
+    probas = model.predict(random_batch, verbose=1)
+    probas = probas.argmax(axis=-1)
+    visualize_batch(random_batch, probas)
+
 else:
     img_input = Input(shape=input_shape)
     network = create_network(img_input)
@@ -77,6 +100,6 @@ else:
 
     model.save(MODEL_FILE)
 
-score = model.evaluate(x_test, y_test, verbose=1)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+    score = model.evaluate(x_test, y_test, verbose=1)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])

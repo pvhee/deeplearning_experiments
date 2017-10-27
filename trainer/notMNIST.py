@@ -35,3 +35,5 @@ def reformat(dataset, labels):
     labels = (np.arange(NUM_LABELS) == labels[:, None]).astype(np.float32)
     return dataset, labels
 
+_pretty_labeler = lambda t: PRETTY_LABELS[t]
+pretty_labeler = np.vectorize(_pretty_labeler)
