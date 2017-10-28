@@ -7,3 +7,5 @@ notMNIST.pickle
 .DS_Store
 *.pyc
 .idea/
+*.h5
+*.tfrecords
