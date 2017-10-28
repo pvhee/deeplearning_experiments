@@ -1,4 +1,4 @@
-# Deep Learning exercises
+# Deep Learning experiments
 > Course exercises and stand-alone deep learning experiments
 
 ## Course material
