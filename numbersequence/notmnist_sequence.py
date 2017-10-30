@@ -99,6 +99,6 @@ def load_data_or_generate(pickle_seq_file='numbersequence/notMNIST.sequence.pick
 
     return (x2_train, y2_train), (x2_valid, y2_valid), (x2_test, y2_test)
 
-# Visualise some examples
-(x2_train, y2_train), (x2_valid, y2_valid), (x2_test, y2_test) = load_data_or_generate(verbose=1, overwrite=0)
-notMNIST.visualize_batch(x2_train[0:8:], y2_train[0:8:].argmax(axis=-1))
+## Visualise some examples
+# (x2_train, y2_train), (x2_valid, y2_valid), (x2_test, y2_test) = load_data_or_generate(verbose=1, overwrite=0)
+# notMNIST.visualize_batch(x2_train[0:8:], y2_train[0:8:].argmax(axis=-1))

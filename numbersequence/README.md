@@ -8,3 +8,10 @@ This is Udacity's final assignment (Lesson 7) for the Deep Learning course.
 First we generate a new data set by concatenating notMNIST letters together into sequences. This artificially constructed test set will allow us to model our network without having to deal with messy data in our initial architecture.
 
     python -m numbersequence.notmnist_sequence
+    
+    
+### Step 2: ConvNet training
+
+To train - or rerun a trained network on a saved model - run
+
+    python -m numbersequence.model
