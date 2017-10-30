@@ -5,8 +5,7 @@ import keras
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten
 from keras.models import Model
 from keras.models import load_model
-from notMNIST import load_data, IMAGE_ROWS, IMAGE_COLS, NUM_LABELS, NUM_CHANNELS, pretty_labeler
-import matplotlib.pyplot as plt
+from notMNIST import load_data, visualize, visualize_batch, IMAGE_ROWS, IMAGE_COLS, NUM_LABELS, NUM_CHANNELS
 import numpy as np
 import os
 import random
@@ -25,26 +24,6 @@ LOAD_MODEL_FLAG = 1
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data(verbose=1)
 input_shape = (IMAGE_ROWS, IMAGE_COLS, NUM_CHANNELS)
-
-def visualize(x):
-    '''Visualize a number from our dataset'''
-    # Get rid of the last dimension (our number of channels, as can't have this for the plot)
-    x = np.squeeze(x, axis=2)
-    plt.figure()
-    plt.axis('off')
-    plt.imshow(x, interpolation='none', cmap='gray')
-    plt.show()
-
-def visualize_batch(x_batch, y_batch):
-    '''Visualize a batch of images'''
-    plt.figure()
-    plt.suptitle(np.array_str(pretty_labeler(y_batch)))
-    for i, x in enumerate(x_batch):
-        x = np.squeeze(x, axis=2)
-        plt.subplot(2, 4, i+1)
-        plt.axis('off')
-        plt.imshow(x)
-    plt.show()
 
 def visualize_number(model, number):
     '''Visualize a number after passing through our model. This gives a visual into the architecture of our network '''
