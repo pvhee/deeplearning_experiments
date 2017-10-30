@@ -26,16 +26,25 @@ LOAD_MODEL_FLAG = 0
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data_or_generate(verbose=1)
 input_shape = (notMNIST.IMAGE_ROWS, notMNIST.IMAGE_COLS * SEQUENCE_LENGTH, notMNIST.NUM_CHANNELS)
 
+def create_conv(x, filters, input_shape=False):
+    kwargs = {}
+    if input_shape:
+        kwargs['input_shape'] = input_shape
+    x = Conv2D(filters, kernel_size=4, strides=1, activation='relu', padding='same', **kwargs)(x)
+    x = MaxPooling2D(pool_size=2)(x)
+    # x = Dropout(0.5)
+    return x
+
 def create_network(img_input):
-    x = Conv2D(32, kernel_size=3, strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(img_input)
-    x = MaxPooling2D(pool_size=2)(x)
-    # x = Conv2D(32, kernel_size=3, strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(x)
-    # x = MaxPooling2D(pool_size=2)(x)
-    x = Conv2D(16, kernel_size=3, strides=(1,1), input_shape=input_shape, activation='relu', padding='same')(x)
-    x = MaxPooling2D(pool_size=2)(x)
+    x = create_conv(img_input, 48, input_shape=input_shape)
+    x = create_conv(x, 64)
+    x = create_conv(x, 128)
+    x = create_conv(x, 160)
+    # x = create_conv(x, 192)
+    # x = create_conv(x, 192)
+    # x = create_conv(x, 192)
     x = Flatten()(x)
-    # x = Dense(56, activation='relu')(x)
-    # x = Dropout(0.5)(x)
+    x = Dense(512, activation='relu')(x)
     x = Dense(SEQUENCE_LENGTH * notMNIST.NUM_LABELS)(x)
     # We need to reshape our output layer so we can apply a softmax to each number independently.
     # This adds an extra dimension for the sequence length
@@ -61,7 +70,7 @@ else:
 
     ## Train the network
     model.compile(loss=keras.losses.categorical_crossentropy,
-                  optimizer=keras.optimizers.Adadelta(),
+                  optimizer=keras.optimizers.Adam(),
                   metrics=['accuracy'])
 
     model.fit(x_train, y_train,
