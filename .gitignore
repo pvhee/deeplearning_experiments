@@ -9,3 +9,4 @@ notMNIST.pickle
 .idea/
 *.h5
 *.tfrecords
+*.pickle
