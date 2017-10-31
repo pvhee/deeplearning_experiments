@@ -16,7 +16,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
 BATCH_SIZE = 32
-EPOCHS = 2
+EPOCHS = 10
 
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'numbersequence_model.5.h5'
@@ -35,7 +35,7 @@ def create_conv(x, filters, input_shape=False):
     x = MaxPooling2D(pool_size=2)(x)
     # Apply dropout only during training
     # if not LOAD_MODEL_FLAG:
-        # x = Dropout(0.7)(x)
+        # x = Dropout(0.25)(x)
     return x
 
 def create_network(img_input):
@@ -85,8 +85,8 @@ else:
               verbose=1,
               validation_data=(x_valid, y_valid))
 
-    model.save(MODEL_FILE)
-
     score = model.evaluate(x_test, y_test, verbose=1)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
+
+    model.save(MODEL_FILE)

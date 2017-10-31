@@ -53,9 +53,9 @@ def load_data_or_generate(pickle_seq_file='numbersequence/notMNIST.sequence.pick
     if not os.path.exists(pickle_seq_file) or overwrite:
         print('Generating new sequence pickle from ', pickle_file, ' and saving to ', pickle_seq_file)
         (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = notMNIST.load_data(pickle_file, verbose=0)
-        x2_train, y2_train = create_sequence(x_train, y_train, limit=10000)
-        x2_valid, y2_valid = create_sequence(x_valid, y_valid, limit=1000)
-        x2_test, y2_test = create_sequence(x_test, y_test, limit=1000)
+        x2_train, y2_train = create_sequence(x_train, y_train, limit=20000)
+        x2_valid, y2_valid = create_sequence(x_valid, y_valid, limit=2000)
+        x2_test, y2_test = create_sequence(x_test, y_test, limit=2000)
 
         print('Generated training set', x2_train.shape, y2_train.shape)
         print('Generated validation set', x2_valid.shape, y2_valid.shape)
@@ -100,5 +100,5 @@ def load_data_or_generate(pickle_seq_file='numbersequence/notMNIST.sequence.pick
     return (x2_train, y2_train), (x2_valid, y2_valid), (x2_test, y2_test)
 
 ## Visualise some examples
-# (x2_train, y2_train), (x2_valid, y2_valid), (x2_test, y2_test) = load_data_or_generate(pickle_seq_file='numbersequence/notMNIST.sequence.pickle', verbose=1, overwrite=1)
+(x2_train, y2_train), (x2_valid, y2_valid), (x2_test, y2_test) = load_data_or_generate(pickle_seq_file='numbersequence/notMNIST.sequence.pickle', verbose=1, overwrite=1)
 # notMNIST.visualize_batch(x2_train[0:8:], y2_train[0:8:].argmax(axis=-1))
