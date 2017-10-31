@@ -15,8 +15,8 @@ import random
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
-BATCH_SIZE = 16
-EPOCHS = 1
+BATCH_SIZE = 32
+EPOCHS = 2
 
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'numbersequence_model.5.h5'
@@ -30,10 +30,12 @@ def create_conv(x, filters, input_shape=False):
     kwargs = {}
     if input_shape:
         kwargs['input_shape'] = input_shape
-    x = Conv2D(filters, kernel_size=3, strides=1, activation='relu', padding='same', **kwargs)(x)
+    x = Conv2D(filters, kernel_size=5, strides=1, activation='relu', padding='same', **kwargs)(x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=2)(x)
-    # x = Dropout(0.7)(x)
+    # Apply dropout only during training
+    # if not LOAD_MODEL_FLAG:
+        # x = Dropout(0.7)(x)
     return x
 
 def create_network(img_input):
@@ -45,7 +47,7 @@ def create_network(img_input):
     # x = create_conv(x, 192)
     # x = create_conv(x, 192)
     x = Flatten()(x)
-    x = Dense(512, activation='relu')(x)
+    x = Dense(1024, activation='relu')(x)
     x = Dense(512, activation='relu')(x)
     x = Dense(SEQUENCE_LENGTH * notMNIST.NUM_LABELS)(x)
     # We need to reshape our output layer so we can apply a softmax to each number independently.
@@ -54,6 +56,7 @@ def create_network(img_input):
     return Activation('softmax')(x)
 
 if(LOAD_MODEL_FLAG):
+    print("Evaluating previously saved model")
     model = load_model(MODEL_FILE)
     model.summary()
     examples = x_test
@@ -64,6 +67,7 @@ if(LOAD_MODEL_FLAG):
     notMNIST.visualize_batch(random_batch, probas)
 
 else:
+    print("Training new model")
     img_input = Input(shape=input_shape)
     network = create_network(img_input)
     model = Model(img_input, network)
