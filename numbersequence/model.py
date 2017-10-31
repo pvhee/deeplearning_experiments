@@ -2,7 +2,7 @@
 """
 
 import keras
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten, Activation, Reshape
+from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten, Activation, Reshape, BatchNormalization
 from keras.models import Model
 from keras.models import load_model
 from notmnist_sequence import load_data_or_generate, SEQUENCE_LENGTH
@@ -15,35 +15,37 @@ import random
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
-BATCH_SIZE = 128
+BATCH_SIZE = 16
 EPOCHS = 1
 
 # Saved model, turn the flag on or off to do evaluating or training
-MODEL_FILE = 'numbersequence_model.h5'
+MODEL_FILE = 'numbersequence_model.5.h5'
 LOAD_MODEL_FLAG = 0
 
 # Load our data
-(x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data_or_generate(verbose=1)
+(x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data_or_generate(verbose=1, pickle_seq_file='numbersequence/notMNIST.sequence.pickle')
 input_shape = (notMNIST.IMAGE_ROWS, notMNIST.IMAGE_COLS * SEQUENCE_LENGTH, notMNIST.NUM_CHANNELS)
 
 def create_conv(x, filters, input_shape=False):
     kwargs = {}
     if input_shape:
         kwargs['input_shape'] = input_shape
-    x = Conv2D(filters, kernel_size=4, strides=1, activation='relu', padding='same', **kwargs)(x)
+    x = Conv2D(filters, kernel_size=3, strides=1, activation='relu', padding='same', **kwargs)(x)
+    x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=2)(x)
-    # x = Dropout(0.5)
+    # x = Dropout(0.7)(x)
     return x
 
 def create_network(img_input):
-    x = create_conv(img_input, 48, input_shape=input_shape)
+    x = create_conv(img_input, 16, input_shape=input_shape)
+    x = create_conv(x, 32)
     x = create_conv(x, 64)
     x = create_conv(x, 128)
-    x = create_conv(x, 160)
-    # x = create_conv(x, 192)
+    # x = create_conv(x, 256)
     # x = create_conv(x, 192)
     # x = create_conv(x, 192)
     x = Flatten()(x)
+    x = Dense(512, activation='relu')(x)
     x = Dense(512, activation='relu')(x)
     x = Dense(SEQUENCE_LENGTH * notMNIST.NUM_LABELS)(x)
     # We need to reshape our output layer so we can apply a softmax to each number independently.
