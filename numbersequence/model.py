@@ -15,12 +15,12 @@ import random
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 EPOCHS = 10
 
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'numbersequence_model.5.h5'
-LOAD_MODEL_FLAG = 0
+LOAD_MODEL_FLAG = 1
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data_or_generate(verbose=1, pickle_seq_file='numbersequence/notMNIST.sequence.pickle')
@@ -34,8 +34,8 @@ def create_conv(x, filters, input_shape=False):
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=2)(x)
     # Apply dropout only during training
-    # if not LOAD_MODEL_FLAG:
-        # x = Dropout(0.25)(x)
+    if not LOAD_MODEL_FLAG:
+        x = Dropout(0.25)(x)
     return x
 
 def create_network(img_input):
