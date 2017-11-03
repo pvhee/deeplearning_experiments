@@ -5,6 +5,7 @@ import scipy
 import sys
 import tarfile
 import PIL.Image as Image
+import matplotlib.pyplot as plt
 
 from digit_struct import DigitStruct
 
@@ -227,7 +228,7 @@ def write_npy_file(data_array, lbl_array, data_set_name, data_path):
 
 def load_svhn_data(data_type, data_set_name):
     # TODO add error handling here
-    path = DATA_PATH + data_set_name
+    path = os.getcwd() + '/svhn/' + DATA_PATH + data_set_name
     imgs = np.load(os.path.join(path, data_set_name+'_'+data_type+'_imgs.npy'))
     labels = np.load(os.path.join(path, data_set_name+'_'+data_type+'_labels.npy'))
     return imgs, labels
@@ -266,11 +267,11 @@ def create_img_array(file_name, top, left, height, width, out_height, out_width)
 
 
 def generate_full_files():
-    # train_data, train_labels = create_svhn('train', 'full')
-    # train_data, valid_data, train_labels, valid_labels = train_validation_spit(train_data, train_labels)
+    train_data, train_labels = create_svhn('train', 'full')
+    train_data, valid_data, train_labels, valid_labels = train_validation_spit(train_data, train_labels)
 
-    # write_npy_file(train_data, train_labels, 'train', 'full')
-    # write_npy_file(valid_data, valid_labels, 'valid', 'full')
+    write_npy_file(train_data, train_labels, 'train', 'full')
+    write_npy_file(valid_data, valid_labels, 'valid', 'full')
 
     test_data, test_labels = create_svhn('test', 'full')
     write_npy_file(test_data, test_labels, 'test', 'full')
@@ -290,7 +291,15 @@ def generate_cropped_files():
     write_npy_file(test_data, test_labels, 'test', 'cropped')
     print("Cropped Files Done!!!")
 
+def print_example(example, label):
+    length = label[0]
+    number = ''.join(str(e) for e in list(filter(lambda x: x < 10, label[1::])))
+    plt.figure()
+    plt.axis('off')
+    plt.imshow(example, interpolation='none')
+    plt.title(number)
+    plt.show()
 
 if __name__ == '__main__':
-    #generate_cropped_files()
+    generate_cropped_files()
     generate_full_files()
