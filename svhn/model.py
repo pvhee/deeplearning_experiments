@@ -22,7 +22,6 @@ NUM_LABELS = 11
 # Our first number in the sequence is the length of the number, followed by 5 numbers 0-10 (with 10 meaning N/A)
 SEQUENCE_LENGTH = 6
 
-
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'svhn_model.h5'
 LOAD_MODEL_FLAG = 0
