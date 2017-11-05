@@ -228,7 +228,7 @@ def write_npy_file(data_array, lbl_array, data_set_name, data_path):
 
 def load_svhn_data(data_type, data_set_name):
     # TODO add error handling here
-    path = os.getcwd() + '/svhn/' + DATA_PATH + data_set_name
+    path = DATA_PATH + data_set_name
     imgs = np.load(os.path.join(path, data_set_name+'_'+data_type+'_imgs.npy'))
     labels = np.load(os.path.join(path, data_set_name+'_'+data_type+'_labels.npy'))
     return imgs, labels

@@ -10,4 +10,5 @@ notMNIST.pickle
 *.h5
 *.tfrecords
 *.pickle
-svhn/data
+svhn/data/
+data
