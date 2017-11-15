@@ -295,7 +295,8 @@ def generate_cropped_files():
     write_npy_file(test_data, test_labels, 'test', 'cropped')
     print("Cropped Files Done!!!")
 
-def print_example(example, label):
+def visualize(example, label):
+    '''Visualize one particular example and print a label'''
     length = label[0]
     number = ''.join(str(e) for e in list(filter(lambda x: x < 10, label[1::])))
     plt.figure()
@@ -303,6 +304,20 @@ def print_example(example, label):
     plt.imshow(example, interpolation='none')
     plt.title(number)
     plt.show()
+
+def visualize_batch(x_batch, y_batch):
+    '''Visualize a batch of images'''
+    plt.figure()
+    # plt.suptitle(np.array_str(pretty_labeler(y_batch)))
+    for i, x in enumerate(x_batch):
+        # x = np.squeeze(x, axis=2)
+        plt.subplot(2, 4, i+1)
+        plt.axis('off')
+        plt.imshow(x)
+    plt.show()
+
+# _pretty_labeler = lambda t: (''.join(str(e) for e in list(filter(lambda x: x < 10, t[1::]))))
+# pretty_labeler = np.vectorize(_pretty_labeler)
 
 def load_data(data_set_name, verbose=0):
     '''Load data for training. This will return a training, validate and test set'''

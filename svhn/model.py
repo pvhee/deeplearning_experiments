@@ -5,7 +5,7 @@ import keras
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten, Activation, Reshape, BatchNormalization
 from keras.models import Model
 from keras.models import load_model
-from svhn_data import load_data
+from svhn_data import load_data, visualize_batch, visualize
 import numpy as np
 import os
 import random
@@ -23,7 +23,7 @@ SEQUENCE_LENGTH = 6
 
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'svhn_model.h5'
-LOAD_MODEL_FLAG = 0
+LOAD_MODEL_FLAG = 1
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
@@ -66,7 +66,10 @@ if(LOAD_MODEL_FLAG):
     random_batch = examples[np.random.choice(examples.shape[0], size=num_examples, replace=False), :]
     probas = model.predict(random_batch, verbose=1)
     probas = probas.argmax(axis=-1)
-    notMNIST.visualize_batch(random_batch, probas)
+    print(random_batch)
+    print(random_batch.shape)
+    print(probas)
+    visualize_batch(random_batch, probas)
 
 else:
     print("Training new model")
