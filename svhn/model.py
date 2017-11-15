@@ -5,7 +5,6 @@ import keras
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten, Activation, Reshape, BatchNormalization
 from keras.models import Model
 from keras.models import load_model
-from keras.utils import to_categorical
 from svhn_data import load_data
 import numpy as np
 import os
@@ -30,8 +29,6 @@ LOAD_MODEL_FLAG = 0
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
 input_shape = (64, 64, 3)
 
-exit(1)
-
 def create_conv(x, filters, input_shape=False):
     kwargs = {}
     if input_shape:
@@ -45,10 +42,11 @@ def create_conv(x, filters, input_shape=False):
     return x
 
 def create_network(img_input):
-    x = create_conv(img_input, 32, input_shape=input_shape)
+    x = create_conv(img_input, 16, input_shape=input_shape)
+    x = create_conv(x, 32)
     x = create_conv(x, 64)
     x = create_conv(x, 128)
-    x = create_conv(x, 256)
+    # x = create_conv(x, 256)
     x = Flatten()(x)
     x = Dense(1024, activation='relu')(x)
     x = Dense(512, activation='relu')(x)
@@ -87,7 +85,7 @@ else:
               batch_size=BATCH_SIZE,
               epochs=EPOCHS,
               verbose=1,
-              validation_data=(x_test, y_test))
+              validation_data=(x_valid, y_valid))
 
     score = model.evaluate(x_test, y_test, verbose=1)
     print('Test loss:', score[0])
