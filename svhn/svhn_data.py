@@ -14,6 +14,10 @@ from sklearn.model_selection import train_test_split
 from itertools import product
 from six.moves.urllib.request import urlretrieve
 
+import keras
+from keras.utils import to_categorical
+
+
 DATA_PATH = "data/svhn/"
 CROPPED_DATA_PATH = DATA_PATH+"cropped"
 FULL_DATA_PATH = DATA_PATH+"full"
@@ -299,6 +303,33 @@ def print_example(example, label):
     plt.imshow(example, interpolation='none')
     plt.title(number)
     plt.show()
+
+def load_data(data_set_name, verbose=0):
+    '''Load data for training. This will return a training, validate and test set'''
+    x_train, y_train = load_svhn_data('train', data_set_name)
+    x_valid, y_valid = load_svhn_data('valid', data_set_name)
+    x_test, y_test = load_svhn_data('test', data_set_name)
+
+    # One-hot encode our labels
+    num_labels = 11
+    y_train = onehot_encode(y_train, num_labels)
+    y_valid = onehot_encode(y_valid, num_labels)
+    y_test = onehot_encode(y_test, num_labels)
+
+    if verbose:
+        print('Training set', x_train.shape, y_train.shape)
+        print('Validation set', x_valid.shape, y_valid.shape)
+        print('Test set', x_test.shape, y_test.shape)
+
+    return (x_train, y_train), (x_valid, y_valid), (x_test, y_test)
+
+def onehot_encode(x, num_classes):
+    # Our first number in the sequence is the length of the number, followed by 5 numbers 0-10 (with 10 meaning N/A)
+    sequence_length = 6
+    num = x.shape[0]
+    x = keras.utils.to_categorical(x, num_classes)
+    # We need to reshape this to 3 dimensions
+    return x.reshape((num, sequence_length, num_classes))
 
 if __name__ == '__main__':
     generate_cropped_files()

@@ -6,7 +6,7 @@ from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten, A
 from keras.models import Model
 from keras.models import load_model
 from keras.utils import to_categorical
-from svhn_data import load_svhn_data
+from svhn_data import load_data
 import numpy as np
 import os
 import random
@@ -27,22 +27,10 @@ MODEL_FILE = 'svhn_model.h5'
 LOAD_MODEL_FLAG = 0
 
 # Load our data
-x_train, y_train = load_svhn_data("train", "full")
-x_test, y_test = load_svhn_data("test", "full")
+(x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
 input_shape = (64, 64, 3)
 
-def onehot_encode(x, num_classes):
-    num = x.shape[0]
-    x = keras.utils.to_categorical(x, num_classes)
-    # We need to reshape this to 3 dimensions
-    return x.reshape((num, SEQUENCE_LENGTH, num_classes))
-
-# One hot encoding
-y_train = onehot_encode(y_train, NUM_LABELS)
-y_test = onehot_encode(y_test, NUM_LABELS)
-
-print(x_train.shape)
-print(y_train.shape)
+exit(1)
 
 def create_conv(x, filters, input_shape=False):
     kwargs = {}
@@ -57,10 +45,10 @@ def create_conv(x, filters, input_shape=False):
     return x
 
 def create_network(img_input):
-    x = create_conv(img_input, 16, input_shape=input_shape)
-    x = create_conv(x, 32)
+    x = create_conv(img_input, 32, input_shape=input_shape)
     x = create_conv(x, 64)
     x = create_conv(x, 128)
+    x = create_conv(x, 256)
     x = Flatten()(x)
     x = Dense(1024, activation='relu')(x)
     x = Dense(512, activation='relu')(x)
