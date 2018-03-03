@@ -20,7 +20,7 @@ EPOCHS = 10
 
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'numbersequence_model.5.h5'
-LOAD_MODEL_FLAG = 1
+LOAD_MODEL_FLAG = 0
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data_or_generate(verbose=1, pickle_seq_file='numbersequence/notMNIST.sequence.pickle')

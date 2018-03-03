@@ -23,7 +23,7 @@ SEQUENCE_LENGTH = 6
 
 # Saved model, turn the flag on or off to do evaluating or training
 MODEL_FILE = 'svhn_model.h5'
-LOAD_MODEL_FLAG = 1
+LOAD_MODEL_FLAG = 0
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
