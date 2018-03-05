@@ -15,7 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
 BATCH_SIZE = 128
-EPOCHS = 10
+EPOCHS = 11
 
 NUM_LABELS = 11
 # Our first number in the sequence is the length of the number, followed by 5 numbers 0-10 (with 10 meaning N/A)
@@ -48,7 +48,7 @@ def create_network(img_input):
     x = create_conv(x, 32)
     x = create_conv(x, 64)
     x = create_conv(x, 128)
-    # x = create_conv(x, 256)
+    x = create_conv(x, 256)
     x = Flatten()(x)
     x = Dense(1024, activation='relu')(x)
     x = Dense(512, activation='relu')(x)

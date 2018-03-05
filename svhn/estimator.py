@@ -75,4 +75,4 @@ def predict(images, model_file):
 
 
 x_wild = load_images()
-predict(x_wild, 'svhn_model.h5')
+predict(x_wild, 'svhn_model.11.h5')
