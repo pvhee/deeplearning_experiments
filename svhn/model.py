@@ -15,15 +15,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
 BATCH_SIZE = 128
-EPOCHS = 3
+EPOCHS = 10
 
 NUM_LABELS = 11
 # Our first number in the sequence is the length of the number, followed by 5 numbers 0-10 (with 10 meaning N/A)
 SEQUENCE_LENGTH = 6
 
 # Saved model, turn the flag on or off to do evaluating or training
-MODEL_FILE = 'svhn_model.h5'
-LOAD_MODEL_FLAG = 1
+MODEL_FILE = 'svhn_model.' + str(EPOCHS) + '.h5'
+LOAD_MODEL_FLAG = 0
 
 # Load our data
 (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
@@ -33,6 +33,8 @@ def create_conv(x, filters, input_shape=False):
     kwargs = {}
     if input_shape:
         kwargs['input_shape'] = input_shape
+        # Give our first layer a name so we can reference it later
+        kwargs['name'] = 'numbers'
     x = Conv2D(filters, kernel_size=5, strides=1, activation='relu', padding='same', **kwargs)(x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=2)(x)
@@ -55,7 +57,7 @@ def create_network(img_input):
     # We need to reshape our output layer so we can apply a softmax to each number independently.
     # This adds an extra dimension for the sequence length
     x = Reshape((6, 11))(x)
-    return Activation('softmax')(x)
+    return Activation('softmax', name='labels')(x)
 
 if(LOAD_MODEL_FLAG):
     print("Evaluating previously saved model")
@@ -66,9 +68,9 @@ if(LOAD_MODEL_FLAG):
     random_batch = examples[np.random.choice(examples.shape[0], size=num_examples, replace=False), :]
     probas = model.predict(random_batch, verbose=1)
     probas = probas.argmax(axis=-1)
-    print(random_batch)
-    print(random_batch.shape)
-    print(probas)
+    # print(random_batch)
+    # print(random_batch.shape)
+    # print(probas)
     visualize_batch(random_batch, probas)
 
 else:
