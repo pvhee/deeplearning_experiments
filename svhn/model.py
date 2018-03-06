@@ -15,14 +15,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
 BATCH_SIZE = 128
-EPOCHS = 11
+EPOCHS = 20
 
 NUM_LABELS = 11
 # Our first number in the sequence is the length of the number, followed by 5 numbers 0-10 (with 10 meaning N/A)
 SEQUENCE_LENGTH = 6
 
 # Saved model, turn the flag on or off to do evaluating or training
-MODEL_FILE = 'svhn_model.' + str(EPOCHS) + '.h5'
+VERSION = '0.2'
+MODEL_FILE = 'svhn_model.' + VERSION + '.h5'
 LOAD_MODEL_FLAG = 0
 
 # Load our data
@@ -40,7 +41,7 @@ def create_conv(x, filters, input_shape=False):
     x = MaxPooling2D(pool_size=2)(x)
     # Apply dropout only during training
     if not LOAD_MODEL_FLAG:
-        x = Dropout(0.25)(x)
+        x = Dropout(0.5)(x)
     return x
 
 def create_network(img_input):

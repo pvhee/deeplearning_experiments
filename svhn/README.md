@@ -16,8 +16,14 @@ This is split up as following:
 ```
 
 
-### ConvNet training
+### ConvNet training and testing
 
 To train - or rerun a trained network on a saved model - run
 
     python -m svhn.model
+    
+To evaluate a list of sample jpg images (64x64x3), run
+
+    python -m svhn.predict 
+    
+Note that we took a sample list of images from pictures and resized those manually via https://www.imgonline.com.ua/eng/resize-image-result.php
