@@ -20,7 +20,7 @@ def load_images():
     Returns:
         Numpy array with sample images.
     """
-    images = np.zeros((len(IMAGE_URLS), 64, 64, 3))
+    images = np.zeros((len(IMAGE_URLS), 64, 64, 3), dtype=np.float32)
     for idx, url in enumerate(IMAGE_URLS):
         img = skimage.io.imread(url)
         img_normalized = tf.Session().run(tf.cast(tf.image.per_image_standardization(img), tf.float32))
@@ -30,13 +30,10 @@ def load_images():
 def predict(images, model_file):
     model = keras.models.load_model(model_file)
     model.summary()
-    # random_batch = examples[np.random.choice(examples.shape[0], size=num_examples, replace=False), :]
     probas = model.predict(images, verbose=1)
     probas = probas.argmax(axis=-1)
-    # print(random_batch)
     print(images.shape)
     print(probas)
-    # visualize_batch(random_batch, probas)
 
 ## Run script
 if __name__ == "__main__":
