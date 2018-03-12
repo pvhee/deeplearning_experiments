@@ -17,18 +17,16 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 BATCH_SIZE = 128
 EPOCHS = 20
 
+# Various data properties, probably we should extract them from our data source
 NUM_LABELS = 11
 # Our first number in the sequence is the length of the number, followed by 5 numbers 0-10 (with 10 meaning N/A)
 SEQUENCE_LENGTH = 6
+INPUT_SHAPE = (64, 64, 3)
 
 # Saved model, turn the flag on or off to do evaluating or training
 VERSION = '0.2'
 MODEL_FILE = 'svhn_model.' + VERSION + '.h5'
-LOAD_MODEL_FLAG = 0
-
-# Load our data
-(x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
-input_shape = (64, 64, 3)
+LOAD_MODEL_FLAG = 1
 
 def create_conv(x, filters, input_shape=False):
     kwargs = {}
@@ -45,7 +43,7 @@ def create_conv(x, filters, input_shape=False):
     return x
 
 def create_network(img_input):
-    x = create_conv(img_input, 16, input_shape=input_shape)
+    x = create_conv(img_input, 16, input_shape=INPUT_SHAPE)
     x = create_conv(x, 32)
     x = create_conv(x, 64)
     x = create_conv(x, 128)
@@ -60,9 +58,8 @@ def create_network(img_input):
     x = Reshape((6, 11))(x)
     return Activation('softmax', name='labels')(x)
 
-if(LOAD_MODEL_FLAG):
-    print("Evaluating previously saved model")
-    model = load_model(MODEL_FILE)
+def predict(model_file, x_test):
+    model = load_model(model_file)
     model.summary()
     examples = x_test
     num_examples = 8
@@ -74,9 +71,8 @@ if(LOAD_MODEL_FLAG):
     # print(probas)
     visualize_batch(random_batch, probas)
 
-else:
-    print("Training new model")
-    img_input = Input(shape=input_shape)
+def train(model_file, x_train, y_train, x_valid, y_valid, x_test, y_test):
+    img_input = Input(shape=INPUT_SHAPE)
     network = create_network(img_input)
     model = Model(img_input, network)
 
@@ -97,8 +93,7 @@ else:
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
 
-    model.save(MODEL_FILE)
-
+    model.save(model_file)
 
 # # Load some data to test on
 # test_data, test_labels = load_svhn_data("test", "full")
@@ -107,5 +102,14 @@ else:
 # img = test_data[19]
 # label = test_labels[19]
 
+## Run script
+if __name__ == "__main__":
+    # Load our data
+    (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_data("full", verbose=1)
 
-
+    if (LOAD_MODEL_FLAG):
+        print("Evaluating previously saved model")
+        predict(MODEL_FILE, x_test)
+    else:
+        print("Training new model")
+        train(MODEL_FILE, x_train, y_train, x_valid, y_valid, x_test, y_test)

@@ -15,12 +15,16 @@ This is split up as following:
 ('Test set', (13068, 64, 64, 3), (13068, 6, 11))
 ```
 
-
-### ConvNet training and testing
+### ConvNet training
 
 To train - or rerun a trained network on a saved model - run
 
     python -m svhn.model
+   
+The model is saved automatically to file after training (check MODEL_FILE for filename)
+and you reuse this model for predicting a random batch of our test data by changing the value of LOAD_MODEL_FLAG
+    
+### ConvNet predictions
     
 To evaluate a list of sample jpg images (64x64x3), run
 
