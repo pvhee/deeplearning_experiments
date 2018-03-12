@@ -12,3 +12,4 @@ notMNIST.pickle
 *.pickle
 svhn/data/
 data
+svhn/export/
