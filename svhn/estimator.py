@@ -10,7 +10,8 @@ from tensorflow.python.estimator.export.export import build_raw_serving_input_re
 
 # Input tensor name matching our input layer
 # @todo give this a custom name rather than having Keras name this
-INPUT_TENSOR_NAME = "input_1"
+INPUT_TENSOR_NAME = 'input_1'
+EXPORT_ESTIMATOR_DIR = 'svhn/export'
 
 def convert_to_estimator(model_file):
     """Convert saved Keras model to TF Estimator
@@ -33,10 +34,10 @@ def serving_input_function():
     feature_spec = {INPUT_TENSOR_NAME: tf.FixedLenFeature(dtype=tf.float32, shape=INPUT_SHAPE)}
     return tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)()
 
-def infer(argv=None):
+def infer(model_file):
     """Run the inference and print the results to stdout."""
     # Initialize the estimator and run the prediction
-    estimator = convert_to_estimator('svhn_model.h5')
+    estimator = convert_to_estimator(model_file)
 
     examples = load_images()
     # examples = examples[:1]
@@ -46,13 +47,13 @@ def infer(argv=None):
         predicted_label = np.argmax(p.values(), axis=-1)
         print predicted_label
 
-def export():
+def export(model_file):
     """Export estimator for use in Google Cloud ML"""
-    estimator = convert_to_estimator('svhn_model.h5')
-    export = estimator.export_savedmodel(export_dir_base='.', serving_input_receiver_fn=serving_input_function)
+    estimator = convert_to_estimator(model_file)
+    export = estimator.export_savedmodel(export_dir_base=EXPORT_ESTIMATOR_DIR, serving_input_receiver_fn=serving_input_function)
     print export
 
 ## Run script
 if __name__ == "__main__":
-    # infer()
-    export()
+    # infer('svhn_model.h5')
+    export('svhn_model.h5')
