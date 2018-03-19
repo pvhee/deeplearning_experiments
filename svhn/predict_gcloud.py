@@ -2,6 +2,7 @@ from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
 import json
 import numpy as np
+from predict import load_images
 
 PROJECT='svhn-digits'
 MODEL_NAME='svhn_digits'
@@ -28,8 +29,18 @@ def predict(img_json):
 def read_json(file):
     return json.load(open(file))
 
+def convert_img_to_json(img_array):
+    """Convert img array into JSON format as expected by Google Cloud ML"""
+    img = {}
+    img["image"] = img_array.tolist()
+    data = {}
+    data["instances"] = [img]
+    return data
+
 ## Run script
 if __name__ == "__main__":
-    img_json = read_json('svhn/data-instances.json')
-    probas = predict(img_json)
-    print probas
+    imgs = load_images()
+    for idx, img in enumerate(imgs):
+        img_json = convert_img_to_json(imgs[idx])
+        probas = predict(img_json)
+        print probas
