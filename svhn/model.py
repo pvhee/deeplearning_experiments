@@ -15,7 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Training settings
 BATCH_SIZE = 128
-EPOCHS = 20
+EPOCHS = 10
 
 # Various data properties, probably we should extract them from our data source
 NUM_LABELS = 11
@@ -24,16 +24,14 @@ SEQUENCE_LENGTH = 6
 INPUT_SHAPE = (64, 64, 3)
 
 # Saved model, turn the flag on or off to do evaluating or training
-VERSION = '0.2'
+VERSION = 'v2'
 MODEL_FILE = 'svhn_model.' + VERSION + '.h5'
-LOAD_MODEL_FLAG = 1
+LOAD_MODEL_FLAG = 0
 
 def create_conv(x, filters, input_shape=False):
     kwargs = {}
     if input_shape:
         kwargs['input_shape'] = input_shape
-        # Give our first layer a name so we can reference it later
-        kwargs['name'] = 'numbers'
     x = Conv2D(filters, kernel_size=5, strides=1, activation='relu', padding='same', **kwargs)(x)
     x = BatchNormalization()(x)
     x = MaxPooling2D(pool_size=2)(x)
@@ -72,7 +70,9 @@ def predict(model_file, x_test):
     visualize_batch(random_batch, probas)
 
 def train(model_file, x_train, y_train, x_valid, y_valid, x_test, y_test):
-    img_input = Input(shape=INPUT_SHAPE)
+    # Note the name of our input layer needs to follow the naming convention *_bytes
+    # so we can map base64 encoded images on this input layer
+    img_input = Input(shape=INPUT_SHAPE, name="image")
     network = create_network(img_input)
     model = Model(img_input, network)
 
