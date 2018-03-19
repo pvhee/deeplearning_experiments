@@ -1,4 +1,4 @@
-"""Implements an Estimator to run Keras model in Google Cloud ML
+"""Predicts image numbers based on a loaded Keras model
 """
 
 import tensorflow as tf
