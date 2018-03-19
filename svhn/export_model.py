@@ -6,11 +6,10 @@ import tensorflow as tf
 import numpy as np
 from predict import load_images
 from model import INPUT_SHAPE
-from tensorflow.python.estimator.export.export import build_raw_serving_input_receiver_fn
 
 # Input tensor name matching our input layer
 # @todo give this a custom name rather than having Keras name this
-INPUT_TENSOR_NAME = 'input_1'
+INPUT_TENSOR_NAME = 'image'
 EXPORT_ESTIMATOR_DIR = 'svhn/export'
 
 def convert_to_estimator(model_file):
@@ -21,7 +20,6 @@ def convert_to_estimator(model_file):
 
 def input_function(features, labels=None, shuffle=False):
     """Returns an input function that can be used for prediction within an estimator"""
-    # @todo rename input_1
     input_fn = tf.estimator.inputs.numpy_input_fn(
         x={INPUT_TENSOR_NAME: features},
         y=labels,
@@ -31,8 +29,12 @@ def input_function(features, labels=None, shuffle=False):
 
 def serving_input_function():
     """Returns a serving input function used for exporting a model"""
-    feature_spec = {INPUT_TENSOR_NAME: tf.FixedLenFeature(dtype=tf.float32, shape=INPUT_SHAPE)}
-    return tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)()
+    # raw_byte_strings = tf.placeholder(dtype=tf.string, shape=[None], name='source')
+    # decode = lambda raw_byte_str: tf.decode_raw(raw_byte_str, tf.float32)
+    # input_images = tf.map_fn(decode, raw_byte_strings, dtype=tf.float32)
+    feature_spec = {INPUT_TENSOR_NAME: tf.placeholder(dtype=tf.float32, shape=(1, 64, 64, 3))}
+    # feature_spec = {'image_bytes': input_images}
+    return tf.estimator.export.build_raw_serving_input_receiver_fn(feature_spec)()
 
 def infer(model_file):
     """Run the inference and print the results to stdout."""
@@ -56,4 +58,6 @@ def export(model_file):
 ## Run script
 if __name__ == "__main__":
     # infer('svhn_model.h5')
-    export('svhn_model.h5')
+    # infer('svhn_model.0.3.h5')
+    # export('svhn_model.h5')
+    export('svhn_model.v2.h5')
