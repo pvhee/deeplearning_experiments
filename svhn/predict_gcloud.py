@@ -29,8 +29,8 @@ def predict(img_json):
 def read_json(file):
     return json.load(open(file))
 
-def convert_img_to_json(img_array):
-    """Convert img array into JSON format as expected by Google Cloud ML"""
+def make_request_json(img_array):
+    """Produces a JSON request suitable to send to CloudML Prediction API"""
     img = {}
     img["image"] = img_array.tolist()
     data = {}
@@ -41,6 +41,6 @@ def convert_img_to_json(img_array):
 if __name__ == "__main__":
     imgs = load_images()
     for idx, img in enumerate(imgs):
-        img_json = convert_img_to_json(imgs[idx])
+        img_json = make_request_json(imgs[idx])
         probas = predict(img_json)
         print probas
